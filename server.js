@@ -11,8 +11,8 @@ var user_routes_1 = __importDefault(require("./routes/user.routes"));
 var auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 var app = express_1.default();
 var origin = process.env.NODE_ENV !== 'development'
-    ? 'http://localhost:3000'
-    : 'https://stock-chat-app.herokuapp.com';
+    ? 'https://stock-chat-app.herokuapp.com'
+    : 'http://localhost:3000';
 app.use(cors_1.default({ origin: origin, credentials: true }));
 mongoose_1.default
     .connect(db_1.uri, db_1.options)
