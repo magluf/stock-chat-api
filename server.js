@@ -10,7 +10,7 @@ var db_1 = require("./config/db");
 var user_routes_1 = __importDefault(require("./routes/user.routes"));
 var auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 var app = express_1.default();
-var origin = process.env.NODE_ENV !== 'development'
+var origin = process.env.NODE_ENV === 'production'
     ? 'https://stock-chat-app.herokuapp.com'
     : 'http://localhost:3000';
 app.use(cors_1.default({ origin: origin, credentials: true }));

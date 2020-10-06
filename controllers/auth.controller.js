@@ -76,6 +76,7 @@ var AuthController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _a = req.body, username = _a.username, password = _a.password;
+                        console.log('AuthController -> login -> req.body', req.body);
                         if (!username || !password) {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
