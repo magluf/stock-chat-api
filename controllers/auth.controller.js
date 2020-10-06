@@ -173,9 +173,47 @@ var AuthController = /** @class */ (function () {
     };
     AuthController.isLoggedIn = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
+            var authorization, token, decoded, user, passwordChangedAt, error_3;
             return __generator(this, function (_a) {
-                httpUtil.setSuccess(200, 'User logged in!');
-                return [2 /*return*/, httpUtil.send(res)];
+                switch (_a.label) {
+                    case 0:
+                        authorization = req.headers.authorization;
+                        if (authorization && authorization.startsWith('Bearer')) {
+                            token = authorization.split(' ')[1];
+                        }
+                        else if (req.headers.cookie) {
+                            token = req.headers.cookie.split('jwt=')[1];
+                        }
+                        if (!token) {
+                            httpUtil.setError(401, 'Not logged in.');
+                            return [2 /*return*/, httpUtil.send(res)];
+                        }
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        return [4 /*yield*/, decodeJwt(token)];
+                    case 2:
+                        decoded = _a.sent();
+                        return [4 /*yield*/, user_service_1.default.getUserById(decoded.id)];
+                    case 3:
+                        user = _a.sent();
+                        if (!user) {
+                            httpUtil.setError(401, 'Invalid credentials.');
+                            return [2 /*return*/, httpUtil.send(res)];
+                        }
+                        passwordChangedAt = user.passwordChangedAt;
+                        if (checkForChangedPassword(decoded.iat, passwordChangedAt)) {
+                            httpUtil.setError(401, 'Invalid credentials.');
+                            return [2 /*return*/, httpUtil.send(res)];
+                        }
+                        httpUtil.setSuccess(200, 'User logged in!', user);
+                        return [2 /*return*/, httpUtil.send(res)];
+                    case 4:
+                        error_3 = _a.sent();
+                        httpUtil.setError(401, error_3);
+                        return [2 /*return*/, httpUtil.send(res)];
+                    case 5: return [2 /*return*/];
+                }
             });
         });
     };
