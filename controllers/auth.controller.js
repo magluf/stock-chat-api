@@ -75,7 +75,7 @@ exports.protect = function (req, res, next) { return __awaiter(void 0, void 0, v
                     token = req.headers.cookie.split('jwt=')[1];
                 }
                 if (!token) {
-                    httpUtil.setError(401, 'Please, log in to get access.');
+                    httpUtil.setError(401, 'Not logged in.');
                     return [2 /*return*/, httpUtil.send(res)];
                 }
                 _a.label = 1;
@@ -167,6 +167,14 @@ var AuthController = /** @class */ (function () {
                     httpOnly: true,
                 });
                 httpUtil.setSuccess(200, 'User logged out!');
+                return [2 /*return*/, httpUtil.send(res)];
+            });
+        });
+    };
+    AuthController.isLoggedIn = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                httpUtil.setSuccess(200, 'User logged in!');
                 return [2 /*return*/, httpUtil.send(res)];
             });
         });
