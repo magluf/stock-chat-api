@@ -21,6 +21,9 @@ var HttpUtil = /** @class */ (function () {
             else if (Object.prototype.hasOwnProperty.call(message.keyValue, 'email')) {
                 message = "Email '" + message.keyValue.email + "' already in use.";
             }
+            else if (Object.prototype.hasOwnProperty.call(message.keyValue, 'name')) {
+                message = "Channel name '" + message.keyValue.name + "' already exists.";
+            }
         }
         this.statusCode = statusCode;
         this.message = message;

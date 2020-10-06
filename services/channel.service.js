@@ -35,59 +35,54 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userSchema = void 0;
-var mongoose_1 = require("mongoose");
-var encrypt_util_1 = require("../utils/encrypt.util");
-var emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-exports.userSchema = new mongoose_1.Schema({
-    username: {
-        type: String,
-        required: 'Username is required.',
-        unique: true,
-    },
-    email: {
-        type: String,
-        required: 'Email adress is required.',
-        trim: true,
-        lowercase: true,
-        unique: true,
-        match: [emailRegex, 'Email adress is invalid.'],
-    },
-    password: {
-        type: String,
-        required: 'Password is required.',
-        select: false,
-    },
-    passwordChangedAt: {
-        type: Date,
-        select: false,
-    },
-    salt: {
-        type: String,
-        select: false,
-    },
-}, { timestamps: true });
-exports.userSchema.pre('save', function (next) {
-    return __awaiter(this, void 0, void 0, function () {
-        var _a, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    if (!this.isModified('password'))
-                        return [2 /*return*/, next()];
-                    _a = this;
-                    return [4 /*yield*/, encrypt_util_1.generateSalt()];
-                case 1:
-                    _a.salt = _c.sent();
-                    _b = this;
-                    return [4 /*yield*/, encrypt_util_1.encryptPassword(this.password, this.salt)];
-                case 2:
-                    _b.password = _c.sent();
-                    next();
-                    return [2 /*return*/];
-            }
+var channel_model_1 = __importDefault(require("../model/channel.model"));
+var ChannelService = /** @class */ (function () {
+    function ChannelService() {
+    }
+    ChannelService.createChannel = function (newChannel) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, channel_model_1.default.create(newChannel)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
         });
-    });
-});
-exports.default = mongoose_1.model('User', exports.userSchema);
+    };
+    ChannelService.getChannels = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, channel_model_1.default.find()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ChannelService.getChannelById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, channel_model_1.default.findById(id)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    ChannelService.getChannelByName = function (name) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, channel_model_1.default.findOne({ name: name })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    return ChannelService;
+}());
+exports.default = ChannelService;
