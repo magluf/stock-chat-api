@@ -58,6 +58,10 @@ var userSchema = new mongoose_1.Schema({
         required: 'Password is required.',
         select: false,
     },
+    passwordChangedAt: {
+        type: Date,
+        select: false,
+    },
     salt: {
         type: String,
         select: false,

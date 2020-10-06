@@ -7,4 +7,5 @@ var express_1 = require("express");
 var auth_controller_1 = __importDefault(require("../controllers/auth.controller"));
 var router = express_1.Router();
 router.route('/login').post(auth_controller_1.default.login);
+router.route('/logout').get(auth_controller_1.default.logout);
 exports.default = router;

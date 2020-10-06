@@ -14,7 +14,6 @@ var HttpUtil = /** @class */ (function () {
         this.type = 'success';
     };
     HttpUtil.prototype.setError = function (statusCode, message) {
-        console.log('HttpUtil -> setError -> message', message);
         if (message.code === 11000) {
             if (Object.prototype.hasOwnProperty.call(message.keyValue, 'username')) {
                 message = "Username '" + message.keyValue.username + "' already in use.";

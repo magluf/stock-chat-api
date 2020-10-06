@@ -64,6 +64,7 @@ var UserController = /** @class */ (function () {
                             username: req.body.username,
                             email: req.body.email,
                             password: req.body.password,
+                            passwordChangedAt: undefined,
                             salt: '',
                         });
                         _a.label = 1;
