@@ -112,7 +112,7 @@ var initiateStockBot = function (author, channel, message) { return __awaiter(vo
                 botMessage = new message_model_1.default({
                     author: botUser,
                     channel: channel,
-                    content: stooqCode.toUpperCase() + " quote is $" + stooqValue + " per share.",
+                    content: stooqCode.toUpperCase() + " quote is $" + parseFloat(stooqValue).toFixed(2) + " per share.",
                 });
                 return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
             case 4: return [2 /*return*/, _a.sent()];
