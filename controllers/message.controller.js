@@ -39,17 +39,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var channel_model_1 = __importDefault(require("../model/channel.model"));
+var message_model_1 = __importDefault(require("../model/message.model"));
 var channel_service_1 = __importDefault(require("../services/channel.service"));
+var message_service_1 = __importDefault(require("../services/message.service"));
 var user_service_1 = __importDefault(require("../services/user.service"));
 var http_util_1 = __importDefault(require("../utils/http.util"));
 var httpUtil = new http_util_1.default();
-var ChannelController = /** @class */ (function () {
-    function ChannelController() {
+var MessageController = /** @class */ (function () {
+    function MessageController() {
     }
-    ChannelController.createChannel = function (req, res) {
+    MessageController.createMessage = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var creator, newChannel, createdChannel, error_1;
+            var author, channel, newMessage, createdMessage, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -57,47 +58,55 @@ var ChannelController = /** @class */ (function () {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        if (!req.body.name || !req.body.creator || !req.body.details) {
+                        if (!req.body.author || !req.body.channel || !req.body.content) {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, user_service_1.default.getFullUser(req.body.creator)];
+                        _a.trys.push([1, 5, , 6]);
+                        return [4 /*yield*/, user_service_1.default.getFullUser(req.body.author)];
                     case 2:
-                        creator = _a.sent();
-                        if (!creator) {
+                        author = _a.sent();
+                        if (!author) {
                             httpUtil.setError(401, 'Credentials invalid');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        newChannel = new channel_model_1.default({
-                            creator: creator,
-                            name: req.body.name,
-                            details: req.body.details,
-                        });
-                        return [4 /*yield*/, channel_service_1.default.createChannel(newChannel)];
+                        return [4 /*yield*/, channel_service_1.default.getChannelById(req.body.channel)];
                     case 3:
-                        createdChannel = _a.sent();
-                        if (createdChannel.creator) {
-                            createdChannel.creator.password = undefined;
-                            createdChannel.creator.salt = undefined;
-                            createdChannel.creator.email = undefined;
+                        channel = _a.sent();
+                        if (!channel) {
+                            httpUtil.setError(401, 'Invalid channel');
+                            return [2 /*return*/, httpUtil.send(res)];
                         }
-                        httpUtil.setSuccess(201, 'Channel Added!', createdChannel);
-                        return [2 /*return*/, httpUtil.send(res)];
+                        channel.creator = author;
+                        newMessage = new message_model_1.default({
+                            author: author,
+                            channel: channel,
+                            content: req.body.content,
+                        });
+                        return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
                     case 4:
+                        createdMessage = _a.sent();
+                        createdMessage.author.password = undefined;
+                        createdMessage.author.salt = undefined;
+                        createdMessage.author.email = undefined;
+                        createdMessage.author.username = undefined;
+                        createdMessage.channel.creator = undefined;
+                        httpUtil.setSuccess(201, 'Message Added!', createdMessage);
+                        return [2 /*return*/, httpUtil.send(res)];
+                    case 5:
                         error_1 = _a.sent();
                         httpUtil.setError(400, error_1);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 5: return [2 /*return*/];
+                    case 6: return [2 /*return*/];
                 }
             });
         });
     };
-    ChannelController.getChannel = function (req, res) {
+    MessageController.getMessage = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, channel, error_2;
+            var id, message, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -105,14 +114,14 @@ var ChannelController = /** @class */ (function () {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, channel_service_1.default.getChannelById(id)];
+                        return [4 /*yield*/, message_service_1.default.getMessageById(id)];
                     case 2:
-                        channel = _a.sent();
-                        if (!channel) {
-                            httpUtil.setError(404, "Cannot find a channel with id " + id + ".");
+                        message = _a.sent();
+                        if (!message) {
+                            httpUtil.setError(404, "Cannot find a message with id " + id + ".");
                         }
                         else {
-                            httpUtil.setSuccess(200, 'Channel found.', channel);
+                            httpUtil.setSuccess(200, 'Message found.', message);
                         }
                         return [2 /*return*/, httpUtil.send(res)];
                     case 3:
@@ -124,21 +133,21 @@ var ChannelController = /** @class */ (function () {
             });
         });
     };
-    ChannelController.getAllChannels = function (req, res) {
+    MessageController.getAllMessages = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var allChannels, error_3;
+            var allMessages, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, channel_service_1.default.getChannels()];
+                        return [4 /*yield*/, message_service_1.default.getMessages()];
                     case 1:
-                        allChannels = _a.sent();
-                        if (allChannels.length > 0) {
-                            httpUtil.setSuccess(200, 'Channels retrieved.', allChannels);
+                        allMessages = _a.sent();
+                        if (allMessages.length > 0) {
+                            httpUtil.setSuccess(200, 'Messages retrieved.', allMessages);
                         }
                         else {
-                            httpUtil.setSuccess(200, 'No channels found.');
+                            httpUtil.setSuccess(200, 'No messages found.');
                         }
                         return [2 /*return*/, httpUtil.send(res)];
                     case 2:
@@ -150,6 +159,6 @@ var ChannelController = /** @class */ (function () {
             });
         });
     };
-    return ChannelController;
+    return MessageController;
 }());
-exports.default = ChannelController;
+exports.default = MessageController;

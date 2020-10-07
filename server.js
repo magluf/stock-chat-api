@@ -10,6 +10,7 @@ var db_1 = require("./config/db");
 var user_routes_1 = __importDefault(require("./routes/user.routes"));
 var auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 var channel_routes_1 = __importDefault(require("./routes/channel.routes"));
+var message_routes_1 = __importDefault(require("./routes/message.routes"));
 var app = express_1.default();
 var origin = process.env.NODE_ENV === 'production'
     ? process.env.PROD_CORS_ORIGIN
@@ -22,6 +23,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/channel', channel_routes_1.default);
+app.use('/api/v1/message', message_routes_1.default);
 app.use('/api/v1/auth', auth_routes_1.default);
 var PORT = process.env.PORT || 3001;
 app.listen(PORT, function () {

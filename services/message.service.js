@@ -39,50 +39,50 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var user_model_1 = __importDefault(require("../model/user.model"));
-var UserService = /** @class */ (function () {
-    function UserService() {
+var message_model_1 = __importDefault(require("../model/message.model"));
+var MessageService = /** @class */ (function () {
+    function MessageService() {
     }
-    UserService.createUser = function (newUser) {
+    MessageService.createMessage = function (newMessage) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, user_model_1.default.create(newUser)];
+                    case 0: return [4 /*yield*/, message_model_1.default.create(newMessage)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    UserService.getUserById = function (id) {
+    MessageService.getMessages = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, user_model_1.default.findById(id)];
+                    case 0: return [4 /*yield*/, message_model_1.default.find()];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    UserService.getFullUser = function (id) {
+    MessageService.getMessageById = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, user_model_1.default.findById(id).select('+password +salt')];
+                    case 0: return [4 /*yield*/, message_model_1.default.findById(id)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    UserService.getUserByUsername = function (username) {
+    MessageService.getMessageByName = function (name) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, user_model_1.default.findOne({ username: username }).select('+password +salt')];
+                    case 0: return [4 /*yield*/, message_model_1.default.findOne({ name: name })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    return UserService;
+    return MessageService;
 }());
-exports.default = UserService;
+exports.default = MessageService;
