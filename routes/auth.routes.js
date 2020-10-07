@@ -24,5 +24,5 @@ var auth_controller_1 = __importStar(require("../controllers/auth.controller"));
 var router = express_1.Router();
 router.route('/login').post(auth_controller_1.default.login);
 router.route('/logout').get(auth_controller_1.default.logout);
-router.route('/').get(auth_controller_1.protect, auth_controller_1.default.isLoggedIn); //Genius
+router.route('/check').get(auth_controller_1.protect, auth_controller_1.default.isLoggedIn); //Genius
 exports.default = router;
