@@ -11,5 +11,7 @@ router
     .route('/')
     .post(auth_controller_1.protect, message_controller_1.default.createMessage)
     .get(auth_controller_1.protect, message_controller_1.default.getAllMessages);
-router.route('/:id').get(auth_controller_1.protect, message_controller_1.default.getMessage);
+router
+    .route('/:channelId')
+    .get(auth_controller_1.protect, message_controller_1.default.getMessagesByChannel);
 exports.default = router;

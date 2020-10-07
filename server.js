@@ -22,8 +22,8 @@ mongoose_1.default
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/api/v1/users', user_routes_1.default);
-app.use('/api/v1/channel', channel_routes_1.default);
-app.use('/api/v1/message', message_routes_1.default);
+app.use('/api/v1/channels', channel_routes_1.default);
+app.use('/api/v1/messages', message_routes_1.default);
 app.use('/api/v1/auth', auth_routes_1.default);
 var PORT = process.env.PORT || 3001;
 app.listen(PORT, function () {

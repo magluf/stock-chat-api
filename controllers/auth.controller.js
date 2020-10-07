@@ -84,11 +84,9 @@ exports.protect = function (req, res, next) { return __awaiter(void 0, void 0, v
                 return [4 /*yield*/, decodeJwt(token)];
             case 2:
                 decoded = _a.sent();
-                console.log('protect -> decoded', decoded);
                 return [4 /*yield*/, user_service_1.default.getUserById(decoded.id)];
             case 3:
                 user = _a.sent();
-                console.log('protect -> user', user);
                 if (!user) {
                     httpUtil.setError(401, 'Invalid credentials.');
                     return [2 /*return*/, httpUtil.send(res)];

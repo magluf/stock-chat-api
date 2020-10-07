@@ -159,6 +159,35 @@ var MessageController = /** @class */ (function () {
             });
         });
     };
+    MessageController.getMessagesByChannel = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var channelId, allMessages, error_4;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        channelId = req.params.channelId;
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, message_service_1.default.getMessagesByChannel(channelId)];
+                    case 2:
+                        allMessages = _a.sent();
+                        if (allMessages.length > 0) {
+                            httpUtil.setSuccess(200, 'Messages retrieved.', allMessages);
+                        }
+                        else {
+                            httpUtil.setSuccess(200, 'No messages found.');
+                        }
+                        return [2 /*return*/, httpUtil.send(res)];
+                    case 3:
+                        error_4 = _a.sent();
+                        httpUtil.setError(400, error_4);
+                        return [2 /*return*/, httpUtil.send(res)];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     return MessageController;
 }());
 exports.default = MessageController;
