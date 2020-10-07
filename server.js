@@ -12,9 +12,13 @@ var auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 var channel_routes_1 = __importDefault(require("./routes/channel.routes"));
 var message_routes_1 = __importDefault(require("./routes/message.routes"));
 var app = express_1.default();
-var origin = process.env.NODE_ENV === 'production'
-    ? process.env.PROD_CORS_ORIGIN
-    : process.env.DEV_CORS_ORIGIN;
+var origin;
+if (process.env.NODE_ENV === 'production') {
+    origin = [process.env.PROD_CORS_ORIGIN, 'localhost:5000'];
+}
+else {
+    origin = process.env.DEV_CORS_ORIGIN;
+}
 app.use(cors_1.default({ origin: origin, credentials: true }));
 mongoose_1.default
     .connect(db_1.uri, db_1.options)
