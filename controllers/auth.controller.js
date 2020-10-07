@@ -142,7 +142,7 @@ var AuthController = /** @class */ (function () {
                             };
                             res.cookie('jwt', token, cookieOptions);
                             httpUtil.setSuccess(201, 'User logged in!', {
-                                id: user._id,
+                                _id: user._id,
                                 username: user.username,
                                 email: user.email,
                             });

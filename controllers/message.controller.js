@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,12 +58,73 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var csvString = __importStar(require("csv-string"));
+var csv_parser_1 = __importDefault(require("csv-parser"));
 var message_model_1 = __importDefault(require("../model/message.model"));
 var channel_service_1 = __importDefault(require("../services/channel.service"));
 var message_service_1 = __importDefault(require("../services/message.service"));
+var stockBot_service_1 = __importDefault(require("../services/stockBot.service"));
 var user_service_1 = __importDefault(require("../services/user.service"));
 var http_util_1 = __importDefault(require("../utils/http.util"));
 var httpUtil = new http_util_1.default();
+/*
+{
+    "_id": "5f7d6a05151b8d1f19f21833",
+    "username": "StockBot",
+    "email": "stock@bot.app",
+    "createdAt": "2020-10-07T07:11:01.711Z",
+    "updatedAt": "2020-10-07T07:11:01.711Z",
+    "__v": 0
+}
+*/
+var initiateStockBot = function (author, channel, message) { return __awaiter(void 0, void 0, void 0, function () {
+    var botUser, botMessage, stooqCode, stock, csvP, csvS, err_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, user_service_1.default.getFullUser(process.env.STOCK_BOT_ID)];
+            case 1:
+                botUser = _a.sent();
+                botMessage = new message_model_1.default({
+                    author: botUser,
+                    channel: channel,
+                    content: '',
+                });
+                if (!message.startsWith('/stock=')) return [3 /*break*/, 8];
+                stooqCode = message.split('/stock=')[1];
+                console.log('stooqCode', stooqCode);
+                if (!(stooqCode.length > 10)) return [3 /*break*/, 3];
+                botMessage.content = "Hello, " + author + "! That seems to be an invalid code. :( Please, use a valid stock code!";
+                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 2: return [2 /*return*/, _a.sent()];
+            case 3:
+                console.log('author', author);
+                botMessage.content = "Hello, " + author + "! Let me see if I can find that for you...";
+                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 4:
+                _a.sent();
+                _a.label = 5;
+            case 5:
+                _a.trys.push([5, 7, , 8]);
+                return [4 /*yield*/, stockBot_service_1.default.checkStooq(stooqCode)];
+            case 6:
+                stock = _a.sent();
+                console.log('stock', stock);
+                csvP = csv_parser_1.default(stock.data);
+                console.log('csvP', csvP);
+                csvS = csvString.parse(stock.data);
+                console.log('csvS', csvS);
+                return [3 /*break*/, 8];
+            case 7:
+                err_1 = _a.sent();
+                console.log('err', err_1);
+                return [3 /*break*/, 8];
+            case 8: return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 9:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); };
 var MessageController = /** @class */ (function () {
     function MessageController() {
     }
@@ -79,15 +159,18 @@ var MessageController = /** @class */ (function () {
                             httpUtil.setError(401, 'Invalid channel');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        channel.creator = author;
                         newMessage = new message_model_1.default({
                             author: author,
                             channel: channel,
                             content: req.body.content,
                         });
+                        console.log('MessageController -> createMessage -> author', author);
                         return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
                     case 4:
                         createdMessage = _a.sent();
+                        if (newMessage.content.startsWith('/')) {
+                            initiateStockBot(newMessage.author.username, newMessage.channel, newMessage.content);
+                        }
                         createdMessage.author.password = undefined;
                         createdMessage.author.salt = undefined;
                         createdMessage.author.email = undefined;
