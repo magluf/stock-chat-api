@@ -58,8 +58,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var csvString = __importStar(require("csv-string"));
-var csv_parser_1 = __importDefault(require("csv-parser"));
+var csv = __importStar(require("csv-string"));
 var message_model_1 = __importDefault(require("../model/message.model"));
 var channel_service_1 = __importDefault(require("../services/channel.service"));
 var message_service_1 = __importDefault(require("../services/message.service"));
@@ -67,18 +66,8 @@ var stockBot_service_1 = __importDefault(require("../services/stockBot.service")
 var user_service_1 = __importDefault(require("../services/user.service"));
 var http_util_1 = __importDefault(require("../utils/http.util"));
 var httpUtil = new http_util_1.default();
-/*
-{
-    "_id": "5f7d6a05151b8d1f19f21833",
-    "username": "StockBot",
-    "email": "stock@bot.app",
-    "createdAt": "2020-10-07T07:11:01.711Z",
-    "updatedAt": "2020-10-07T07:11:01.711Z",
-    "__v": 0
-}
-*/
 var initiateStockBot = function (author, channel, message) { return __awaiter(void 0, void 0, void 0, function () {
-    var botUser, botMessage, stooqCode, stock, csvP, csvS, err_1;
+    var botUser, botMessage, messageByStockBot, stooqCode, stock, arr, stooqValue, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, user_service_1.default.getFullUser(process.env.STOCK_BOT_ID)];
@@ -89,39 +78,63 @@ var initiateStockBot = function (author, channel, message) { return __awaiter(vo
                     channel: channel,
                     content: '',
                 });
+                messageByStockBot = function (text) { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                botMessage = new message_model_1.default({
+                                    author: botUser,
+                                    channel: channel,
+                                    content: text,
+                                });
+                                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    });
+                }); };
                 if (!message.startsWith('/stock=')) return [3 /*break*/, 8];
                 stooqCode = message.split('/stock=')[1];
-                console.log('stooqCode', stooqCode);
-                if (!(stooqCode.length > 10)) return [3 /*break*/, 3];
-                botMessage.content = "Hello, " + author + "! That seems to be an invalid code. :( Please, use a valid stock code!";
-                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 2: return [2 /*return*/, _a.sent()];
-            case 3:
-                console.log('author', author);
-                botMessage.content = "Hello, " + author + "! Let me see if I can find that for you...";
-                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 4:
-                _a.sent();
-                _a.label = 5;
-            case 5:
-                _a.trys.push([5, 7, , 8]);
+                if (stooqCode.length > 10) {
+                    return [2 /*return*/, messageByStockBot("Hello, " + author + "! That seems to be an invalid code. :( Please, use a valid stock code!")];
+                }
+                messageByStockBot("Hello, " + author + "! Let me see if I can find the current value for the \"" + stooqCode + "\" stock...");
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 5, , 7]);
                 return [4 /*yield*/, stockBot_service_1.default.checkStooq(stooqCode)];
-            case 6:
+            case 3:
                 stock = _a.sent();
-                console.log('stock', stock);
-                csvP = csv_parser_1.default(stock.data);
-                console.log('csvP', csvP);
-                csvS = csvString.parse(stock.data);
-                console.log('csvS', csvS);
-                return [3 /*break*/, 8];
-            case 7:
+                arr = csv.parse(stock.data);
+                stooqValue = arr[1][6];
+                if (stooqValue === 'N/D') {
+                    return [2 /*return*/, messageByStockBot("Unfortunately, I couldn't find any values for \"" + stooqCode + "\". Are you sure it's a valid stock code?")];
+                }
+                botMessage = new message_model_1.default({
+                    author: botUser,
+                    channel: channel,
+                    content: stooqCode.toUpperCase() + " quote is $" + stooqValue + " per share.",
+                });
+                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 4: return [2 /*return*/, _a.sent()];
+            case 5:
                 err_1 = _a.sent();
-                console.log('err', err_1);
-                return [3 /*break*/, 8];
-            case 8: return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 9:
-                _a.sent();
-                return [2 /*return*/];
+                botMessage = new message_model_1.default({
+                    author: botUser,
+                    channel: channel,
+                    content: "There seems to be a problem with retrieving stock quotes from stooq.com :( Please, try again later.",
+                });
+                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 6: return [2 /*return*/, _a.sent()];
+            case 7: return [3 /*break*/, 10];
+            case 8:
+                botMessage = new message_model_1.default({
+                    author: botUser,
+                    channel: channel,
+                    content: "That's an invalid code. :( Please, use '/stock=<STOCK_CODE>' for me to tell you proper stock values!",
+                });
+                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
+            case 9: return [2 /*return*/, _a.sent()];
+            case 10: return [2 /*return*/];
         }
     });
 }); };
@@ -164,7 +177,6 @@ var MessageController = /** @class */ (function () {
                             channel: channel,
                             content: req.body.content,
                         });
-                        console.log('MessageController -> createMessage -> author', author);
                         return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
                     case 4:
                         createdMessage = _a.sent();
@@ -255,7 +267,7 @@ var MessageController = /** @class */ (function () {
                         return [4 /*yield*/, message_service_1.default.getMessagesByChannel(channelId)];
                     case 2:
                         allMessages = _a.sent();
-                        if (allMessages.length > 0) {
+                        if (allMessages && allMessages.length > 0) {
                             httpUtil.setSuccess(200, 'Messages retrieved.', allMessages);
                         }
                         else {

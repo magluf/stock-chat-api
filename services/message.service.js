@@ -67,7 +67,9 @@ var MessageService = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, message_model_1.default.find({ 'channel._id': channelId }).limit(50)];
+                    case 0: return [4 /*yield*/, message_model_1.default.find({ 'channel._id': channelId })
+                            .sort('-createdAt')
+                            .limit(50)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
