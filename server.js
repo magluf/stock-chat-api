@@ -33,3 +33,4 @@ var PORT = process.env.PORT || 3001;
 app.listen(PORT, function () {
     console.log("server is running on PORT " + PORT);
 });
+exports.default = app;
