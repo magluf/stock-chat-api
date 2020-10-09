@@ -97,15 +97,12 @@ var initiateStockBot = function (username, channelId, message) { return __awaite
                                     content: text,
                                 });
                                 return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-                            case 1: 
-                            // console.log(`sendMessageByStockBot -> botMessage`, botMessage);
-                            return [2 /*return*/, _a.sent()];
+                            case 1: return [2 /*return*/, _a.sent()];
                         }
                     });
                 }); };
                 if (!message.startsWith('/stock=')) return [3 /*break*/, 6];
                 stooqCode = message.split('/stock=')[1];
-                // console.log(`stooqCode`, stooqCode);
                 if (stooqCode.length > 10) {
                     return [2 /*return*/, sendMessageByStockBot("Hello, " + username + "! That seems to be an invalid code. :( Please, use a valid stock code!")];
                 }
@@ -150,7 +147,7 @@ var MessageController = /** @class */ (function () {
                         }
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 5, , 6]);
+                        _a.trys.push([1, 7, , 8]);
                         return [4 /*yield*/, user_service_1.default.getFullUser(req.body.authorId)];
                     case 2:
                         author = _a.sent();
@@ -170,20 +167,21 @@ var MessageController = /** @class */ (function () {
                             channelId: channel._id,
                             content: req.body.content,
                         });
-                        return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
-                    case 4:
+                        if (!newMessage.content.startsWith('/')) return [3 /*break*/, 4];
+                        initiateStockBot(author.username, newMessage.channelId, newMessage.content);
+                        return [3 /*break*/, 6];
+                    case 4: return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
+                    case 5:
                         createdMessage = _a.sent();
-                        if (newMessage.content.startsWith('/')) {
-                            initiateStockBot(author.username, newMessage.channelId, newMessage.content);
-                        }
                         httpUtil.setSuccess(201, 'Message Added!', createdMessage);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 5:
+                    case 6: return [3 /*break*/, 8];
+                    case 7:
                         error_1 = _a.sent();
                         // console.log(`MessageController -> createMessage -> error`, error);
                         httpUtil.setError(400, error_1);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 6: return [2 /*return*/];
+                    case 8: return [2 /*return*/];
                 }
             });
         });
