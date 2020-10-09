@@ -138,7 +138,7 @@ var AuthController = /** @class */ (function () {
                     case 2:
                         user = _b.sent();
                         if (!user) {
-                            httpUtil.setError(400, 'Incomplete info.');
+                            httpUtil.setError(400, 'Credentials invalid.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         return [4 /*yield*/, encrypt_util_1.isDecryptionValid(password, user.salt, user.password)];
