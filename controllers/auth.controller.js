@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -111,7 +122,7 @@ var AuthController = /** @class */ (function () {
     }
     AuthController.login = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, username, password, user, token, cookieOptions, error_2;
+            var _a, username, password, user, token, cookieOptions, response, herokuResponse, error_2;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -127,7 +138,6 @@ var AuthController = /** @class */ (function () {
                     case 2:
                         user = _b.sent();
                         if (!user) {
-                            httpUtil.setError(401, 'Credentials invalid');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         return [4 /*yield*/, encrypt_util_1.isDecryptionValid(password, user.salt, user.password)];
@@ -139,12 +149,19 @@ var AuthController = /** @class */ (function () {
                                 secure: false,
                                 httpOnly: true,
                             };
-                            res.cookie('jwt', token, cookieOptions);
-                            httpUtil.setSuccess(201, 'User logged in!', {
+                            response = {
                                 _id: user._id,
                                 username: user.username,
                                 email: user.email,
-                            });
+                            };
+                            herokuResponse = void 0;
+                            if (res.locals.heroku) {
+                                herokuResponse = __assign(__assign({}, response), { token: token });
+                            }
+                            else {
+                                res.cookie('jwt', token, cookieOptions);
+                            }
+                            httpUtil.setSuccess(201, 'User logged in!', herokuResponse || response);
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         httpUtil.setError(401, 'Credentials invalid.');
