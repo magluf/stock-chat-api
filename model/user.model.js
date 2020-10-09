@@ -36,11 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userSchema = void 0;
 var mongoose_1 = require("mongoose");
 var encrypt_util_1 = require("../utils/encrypt.util");
 var emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-exports.userSchema = new mongoose_1.Schema({
+var userSchema = new mongoose_1.Schema({
     username: {
         type: String,
         required: 'Username is required.',
@@ -68,7 +67,7 @@ exports.userSchema = new mongoose_1.Schema({
         select: false,
     },
 }, { timestamps: true });
-exports.userSchema.pre('save', function (next) {
+userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function () {
         var _a, _b;
         return __generator(this, function (_c) {
@@ -90,4 +89,4 @@ exports.userSchema.pre('save', function (next) {
         });
     });
 });
-exports.default = mongoose_1.model('User', exports.userSchema);
+exports.default = mongoose_1.model('User', userSchema);

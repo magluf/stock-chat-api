@@ -41,7 +41,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var channel_model_1 = __importDefault(require("../model/channel.model"));
 var channel_service_1 = __importDefault(require("../services/channel.service"));
-var user_service_1 = __importDefault(require("../services/user.service"));
 var http_util_1 = __importDefault(require("../utils/http.util"));
 var httpUtil = new http_util_1.default();
 var ChannelController = /** @class */ (function () {
@@ -49,7 +48,7 @@ var ChannelController = /** @class */ (function () {
     }
     ChannelController.createChannel = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var creator, newChannel, createdChannel, error_1;
+            var newChannel, createdChannel, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -57,40 +56,27 @@ var ChannelController = /** @class */ (function () {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        if (!req.body.name || !req.body.creator || !req.body.details) {
+                        if (!req.body.name || !req.body.details) {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, user_service_1.default.getFullUser(req.body.creator)];
-                    case 2:
-                        creator = _a.sent();
-                        if (!creator) {
-                            httpUtil.setError(401, 'Credentials invalid');
-                            return [2 /*return*/, httpUtil.send(res)];
-                        }
+                        _a.trys.push([1, 3, , 4]);
                         newChannel = new channel_model_1.default({
-                            creator: creator,
                             name: req.body.name,
                             details: req.body.details,
                         });
                         return [4 /*yield*/, channel_service_1.default.createChannel(newChannel)];
-                    case 3:
+                    case 2:
                         createdChannel = _a.sent();
-                        if (createdChannel.creator) {
-                            createdChannel.creator.password = undefined;
-                            createdChannel.creator.salt = undefined;
-                            createdChannel.creator.email = undefined;
-                        }
                         httpUtil.setSuccess(201, 'Channel Added!', createdChannel);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 4:
+                    case 3:
                         error_1 = _a.sent();
                         httpUtil.setError(400, error_1);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 5: return [2 /*return*/];
+                    case 4: return [2 /*return*/];
                 }
             });
         });

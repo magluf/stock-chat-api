@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -66,75 +77,57 @@ var stockBot_service_1 = __importDefault(require("../services/stockBot.service")
 var user_service_1 = __importDefault(require("../services/user.service"));
 var http_util_1 = __importDefault(require("../utils/http.util"));
 var httpUtil = new http_util_1.default();
-var initiateStockBot = function (author, channel, message) { return __awaiter(void 0, void 0, void 0, function () {
-    var botUser, botMessage, messageByStockBot, stooqCode, stock, arr, stooqValue, err_1;
+var initiateStockBot = function (username, channelId, message) { return __awaiter(void 0, void 0, void 0, function () {
+    var botUser, sendMessageByStockBot, stooqCode, stock, arr, stooqValue, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, user_service_1.default.getFullUser(process.env.STOCK_BOT_ID)];
+            case 0:
+                message = message.toLocaleLowerCase();
+                return [4 /*yield*/, user_service_1.default.getFullUser(process.env.STOCK_BOT_ID)];
             case 1:
                 botUser = _a.sent();
-                botMessage = new message_model_1.default({
-                    author: botUser,
-                    channel: channel,
-                    content: '',
-                });
-                messageByStockBot = function (text) { return __awaiter(void 0, void 0, void 0, function () {
+                sendMessageByStockBot = function (text) { return __awaiter(void 0, void 0, void 0, function () {
+                    var botMessage;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 botMessage = new message_model_1.default({
-                                    author: botUser,
-                                    channel: channel,
+                                    authorId: botUser === null || botUser === void 0 ? void 0 : botUser._id,
+                                    channelId: channelId,
                                     content: text,
                                 });
                                 return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-                            case 1: return [2 /*return*/, _a.sent()];
+                            case 1: 
+                            // console.log(`sendMessageByStockBot -> botMessage`, botMessage);
+                            return [2 /*return*/, _a.sent()];
                         }
                     });
                 }); };
-                if (!message.startsWith('/stock=')) return [3 /*break*/, 8];
+                if (!message.startsWith('/stock=')) return [3 /*break*/, 6];
                 stooqCode = message.split('/stock=')[1];
+                // console.log(`stooqCode`, stooqCode);
                 if (stooqCode.length > 10) {
-                    return [2 /*return*/, messageByStockBot("Hello, " + author + "! That seems to be an invalid code. :( Please, use a valid stock code!")];
+                    return [2 /*return*/, sendMessageByStockBot("Hello, " + username + "! That seems to be an invalid code. :( Please, use a valid stock code!")];
                 }
-                messageByStockBot("Hello, " + author + "! Let me see if I can find the current value for the \"" + stooqCode + "\" stock...");
+                sendMessageByStockBot("Hello, " + username + "! Let me see if I can find the current value for the \"" + stooqCode + "\" stock...");
                 _a.label = 2;
             case 2:
-                _a.trys.push([2, 5, , 7]);
+                _a.trys.push([2, 4, , 5]);
                 return [4 /*yield*/, stockBot_service_1.default.checkStooq(stooqCode)];
             case 3:
                 stock = _a.sent();
                 arr = csv.parse(stock.data);
                 stooqValue = arr[1][6];
                 if (stooqValue === 'N/D') {
-                    return [2 /*return*/, messageByStockBot("Unfortunately, I couldn't find any values for \"" + stooqCode + "\". Are you sure it's a valid stock code?")];
+                    return [2 /*return*/, sendMessageByStockBot("Unfortunately, I couldn't find any values for \"" + stooqCode + "\". Are you sure it's a valid stock code?")];
                 }
-                botMessage = new message_model_1.default({
-                    author: botUser,
-                    channel: channel,
-                    content: stooqCode.toUpperCase() + " quote is $" + parseFloat(stooqValue).toFixed(2) + " per share.",
-                });
-                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 4: return [2 /*return*/, _a.sent()];
-            case 5:
+                return [2 /*return*/, sendMessageByStockBot(stooqCode.toUpperCase() + " quote is $" + parseFloat(stooqValue).toFixed(2) + " per share.")];
+            case 4:
                 err_1 = _a.sent();
-                botMessage = new message_model_1.default({
-                    author: botUser,
-                    channel: channel,
-                    content: "There seems to be a problem with retrieving stock quotes from stooq.com :( Please, try again later.",
-                });
-                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 6: return [2 /*return*/, _a.sent()];
-            case 7: return [3 /*break*/, 10];
-            case 8:
-                botMessage = new message_model_1.default({
-                    author: botUser,
-                    channel: channel,
-                    content: "That's an invalid code. :( Please, use '/stock=<STOCK_CODE>' for me to tell you proper stock values!",
-                });
-                return [4 /*yield*/, message_service_1.default.createMessage(botMessage)];
-            case 9: return [2 /*return*/, _a.sent()];
-            case 10: return [2 /*return*/];
+                return [2 /*return*/, sendMessageByStockBot("There seems to be a problem with retrieving stock quotes from stooq.com :( Please, try again later.")];
+            case 5: return [3 /*break*/, 7];
+            case 6: return [2 /*return*/, sendMessageByStockBot("That's an invalid code. :( Please, use '/stock=<STOCK_CODE>' for me to tell you proper stock values!")];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
@@ -151,21 +144,21 @@ var MessageController = /** @class */ (function () {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        if (!req.body.author || !req.body.channel || !req.body.content) {
+                        if (!req.body.authorId || !req.body.channelId || !req.body.content) {
                             httpUtil.setError(400, 'Incomplete info.');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 5, , 6]);
-                        return [4 /*yield*/, user_service_1.default.getFullUser(req.body.author)];
+                        return [4 /*yield*/, user_service_1.default.getFullUser(req.body.authorId)];
                     case 2:
                         author = _a.sent();
                         if (!author) {
                             httpUtil.setError(401, 'Credentials invalid');
                             return [2 /*return*/, httpUtil.send(res)];
                         }
-                        return [4 /*yield*/, channel_service_1.default.getChannelById(req.body.channel)];
+                        return [4 /*yield*/, channel_service_1.default.getChannelById(req.body.channelId)];
                     case 3:
                         channel = _a.sent();
                         if (!channel) {
@@ -173,25 +166,21 @@ var MessageController = /** @class */ (function () {
                             return [2 /*return*/, httpUtil.send(res)];
                         }
                         newMessage = new message_model_1.default({
-                            author: author,
-                            channel: channel,
+                            authorId: author._id,
+                            channelId: channel._id,
                             content: req.body.content,
                         });
                         return [4 /*yield*/, message_service_1.default.createMessage(newMessage)];
                     case 4:
                         createdMessage = _a.sent();
                         if (newMessage.content.startsWith('/')) {
-                            initiateStockBot(newMessage.author.username, newMessage.channel, newMessage.content);
+                            initiateStockBot(author.username, newMessage.channelId, newMessage.content);
                         }
-                        createdMessage.author.password = undefined;
-                        createdMessage.author.salt = undefined;
-                        createdMessage.author.email = undefined;
-                        createdMessage.author.username = undefined;
-                        createdMessage.channel.creator = undefined;
                         httpUtil.setSuccess(201, 'Message Added!', createdMessage);
                         return [2 /*return*/, httpUtil.send(res)];
                     case 5:
                         error_1 = _a.sent();
+                        // console.log(`MessageController -> createMessage -> error`, error);
                         httpUtil.setError(400, error_1);
                         return [2 /*return*/, httpUtil.send(res)];
                     case 6: return [2 /*return*/];
@@ -256,29 +245,52 @@ var MessageController = /** @class */ (function () {
     };
     MessageController.getMessagesByChannel = function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var channelId, allMessages, error_4;
+            var channelId, allMessages, resMessagesPromises, resMessages, error_4;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         channelId = req.params.channelId;
                         _a.label = 1;
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a.trys.push([1, 4, , 5]);
                         return [4 /*yield*/, message_service_1.default.getMessagesByChannel(channelId)];
                     case 2:
                         allMessages = _a.sent();
-                        if (allMessages && allMessages.length > 0) {
-                            httpUtil.setSuccess(200, 'Messages retrieved.', allMessages);
+                        resMessagesPromises = allMessages.map(function (message) { return __awaiter(_this, void 0, void 0, function () {
+                            var user, m;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, user_service_1.default.getUserById(message.authorId)];
+                                    case 1:
+                                        user = _a.sent();
+                                        m = {
+                                            _id: message._id,
+                                            authorId: message.authorId,
+                                            channel: message.channelId,
+                                            content: message.content,
+                                            createAt: message.createAt,
+                                            updatedAt: message.updatedAt,
+                                        };
+                                        return [2 /*return*/, __assign(__assign({}, m), { username: user ? user.username : '[USER DELETED]' })];
+                                }
+                            });
+                        }); });
+                        return [4 /*yield*/, Promise.all(resMessagesPromises)];
+                    case 3:
+                        resMessages = _a.sent();
+                        if (resMessages.length > 0) {
+                            httpUtil.setSuccess(200, 'Messages retrieved.', resMessages);
                         }
                         else {
                             httpUtil.setSuccess(200, 'No messages found.');
                         }
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 3:
+                    case 4:
                         error_4 = _a.sent();
                         httpUtil.setError(400, error_4);
                         return [2 /*return*/, httpUtil.send(res)];
-                    case 4: return [2 /*return*/];
+                    case 5: return [2 /*return*/];
                 }
             });
         });
